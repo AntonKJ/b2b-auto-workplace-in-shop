@@ -1,4 +1,4 @@
-Myexample B2B service
+Myexample B2B auto
 ===============================
 
 #### Production: https://ml.myexample.ru/
