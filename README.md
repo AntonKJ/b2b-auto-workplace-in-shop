@@ -2,7 +2,6 @@ Myexample B2B service
 ===============================
 
 #### Production: https://ml.myexample.ru/
-#### Test: https://ml.1121313.ru/
 
 ## Настройка проекта:
 
