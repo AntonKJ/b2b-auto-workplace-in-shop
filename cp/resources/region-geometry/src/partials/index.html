@@ -1,0 +1,22 @@
+<div class="index-page">
+	<div class="map-wrapper">
+		<div yandex-map
+		     style="height: 500px;"
+		     init-params="ctrl.mapParams"
+		     on-after-init="ctrl.onMapInit($target)"></div>
+	</div>
+	<div class="zones-list">
+		<div class="table-wrapper">
+			<table>
+				<tbody>
+				<tr ng-repeat="zone in ctrl.zones track by zone.id"
+				    ng-style="{true:{background: '#eaeaea'},false:{}}[zone.active]">
+					<td class="text-center">{{zone.id}}</td>
+					<td><a href ng-click="ctrl.setActiveZone(zone)">{{zone.title}}</a></td>
+					<td class="text-center">{{zone.order_type_id}}</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>

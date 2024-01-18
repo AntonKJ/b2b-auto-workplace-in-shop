@@ -1,0 +1,26 @@
+version: '3.2'
+
+networks:
+  default:
+    driver: bridge
+
+secrets:
+  host_ssh_key:
+    file: ~/.ssh/id_rsa
+
+services:
+
+  php:
+    container_name: myexample_b2b_php
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    networks:
+      - default
+    volumes:
+      # Re-use local composer cache via host-volume
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      # Mount source-code for development
+      - ./:/app
+    secrets:
+      - host_ssh_key

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" style="margin: 0;padding: 0;height: 100%;">
+<head>
+
+	<meta charset="UTF-8">
+
+	<title>Отображение координат регионов на карте</title>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+
+</head>
+<body style="margin: 0;padding: 0;height: 100%;">
+<div id="map" style="display: block;min-height: 100%;"></div>
+<script type="text/javascript">
+
+	ymaps.ready(init);
+
+	function init() {
+
+		jQuery(function ($) {
+
+			var map = new ymaps.Map("map", {
+				center: [55.76, 37.64],
+				zoom: 7
+			});
+
+			var collection = new ymaps.GeoObjectCollection({});
+			map.geoObjects.add(collection);
+
+			function getParameterByName(name, url) {
+				if (!url) url = window.location.href;
+				name = name.replace(/[\[\]]/g, "\\$&");
+				var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+					results = regex.exec(url);
+				if (!results) return null;
+				if (!results[2]) return '';
+				return decodeURIComponent(results[2].replace(/\+/g, " "));
+			}
+
+			var token = getParameterByName('token');
+
+			if (token == null || String(token).length == 0)
+				token = window.prompt('Укажите токен');
+
+			console.log(token);
+
+			function populate(regions) {
+
+				$.each(regions, function (i, region) {
+
+					if (region.gps != null) {
+						collection.add(new ymaps.Placemark(region.gps.split(','), {
+							iconContent: region.name,
+							hintContent: region.name,
+							balloonContent: region.name + '<br/> ' + region.gps
+						}, {
+							preset: 'islands#blackStretchyIcon'
+						}));
+					}
+				});
+
+				if (collection.getLength() > 0)
+					map.setBounds(collection.getBounds());
+
+			}
+
+			$.ajax({
+				url: '/goodyear/deliveries',
+				method: 'GET',
+				dataType: 'json',
+				beforeSend: function (xhr, settings) {
+					xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+				}
+			})
+				.then(function (response) {
+					populate(response.response.regions);
+				})
+				.fail(function (r) {
+					alert(r.statusText);
+				})
+			;
+
+
+		});
+
+	}
+</script>
+</body>
+</html>

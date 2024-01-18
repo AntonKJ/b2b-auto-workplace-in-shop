@@ -1,0 +1,66 @@
+<?php
+
+namespace common\tests\unit\models;
+
+use b2b\modules\api\models\LoginForm;
+use Codeception\Test\Unit;
+use common\fixtures\User as UserFixture;
+use common\tests\UnitTester;
+use Yii;
+
+/**
+ * Login form test
+ */
+class LoginFormTest extends Unit
+{
+	/**
+	 * @var UnitTester
+	 */
+	protected $tester;
+
+
+	public function _before()
+	{
+		$this->tester->haveFixtures([
+			'user' => [
+				'class' => UserFixture::class,
+				'dataFile' => codecept_data_dir() . 'user.php',
+			],
+		]);
+	}
+
+	public function testLoginNoUser()
+	{
+		$model = new LoginForm([
+			'email' => 'not_existing_username@mail.com',
+			'password' => 'not_existing_password',
+		]);
+
+		expect('model should not login user', $model->login())->false();
+		expect('user should not be logged in', Yii::$app->user->isGuest)->true();
+	}
+
+	public function testLoginWrongPassword()
+	{
+		$model = new LoginForm([
+			'email' => '2@sst.su',
+			'password' => 'wrong_password',
+		]);
+
+		expect('model should not login user', $model->login())->false();
+		expect('error message should be set', $model->errors)->hasKey('password');
+		expect('user should not be logged in', Yii::$app->user->isGuest)->true();
+	}
+
+	public function testLoginCorrect()
+	{
+		$model = new LoginForm([
+			'email' => '2@sst.su',
+			'password' => '2222',
+		]);
+
+		expect('model should login user', $model->login())->true();
+		expect('error message should not be set', $model->errors)->hasntKey('password');
+		expect('user should be logged in', Yii::$app->user->isGuest)->false();
+	}
+}

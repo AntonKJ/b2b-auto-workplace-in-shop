@@ -1,0 +1,26 @@
+
+POST http://api.myexample.localdev/mosautoshina/order.json
+Authorization: Bearer df4cb3d9-0c89-4d17-ae12-6dd20f80ab8d
+Content-Type: application/json
+
+{
+  "addressId": 2,
+  "shipmentDate": "2019-09-20",
+  "shipmentMethod": "DELIVERY",
+  "paymentMethod": "CASH",
+  "comment": "ТЕСТОВЫЙ ЗАКАЗ!",
+  "goods": [
+    {
+      "sku": "805429",
+      "quantity": 1
+    }
+  ]
+}
+
+###
+
+PUT http://api.myexample.localdev/mosautoshina/order/410881/cancel.json
+Authorization: Bearer df4cb3d9-0c89-4d17-ae12-6dd20f80ab8d
+Content-Type: application/json
+
+###

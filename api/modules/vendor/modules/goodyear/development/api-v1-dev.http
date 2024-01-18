@@ -1,0 +1,36 @@
+###
+# Регионы
+GET http://api.myexample.localdev/goodyear/deliveries
+Authorization: Bearer d945934d-2f54-45ca-aeee-101316291432
+
+###
+# Конкретный регион
+GET http://api.myexample.localdev/goodyear/deliveries/243
+Authorization: Bearer d945934d-2f54-45ca-aeee-101316291432
+
+###
+# Товары
+GET http://api.myexample.localdev/goodyear/good
+Authorization: Bearer d945934d-2f54-45ca-aeee-101316291432
+
+###
+# Магазины
+GET http://api.myexample.localdev/goodyear/shops
+Authorization: Bearer d945934d-2f54-45ca-aeee-101316291432
+
+###
+# Конкретный магазин
+GET http://api.myexample.localdev/goodyear/shops/1
+Authorization: Bearer d945934d-2f54-45ca-aeee-101316291432
+
+###
+# Товары в магазине
+GET http://api.myexample.localdev/goodyear/shops/1/goods
+Authorization: Bearer d945934d-2f54-45ca-aeee-101316291432
+
+###
+# Конкретный товар с прогнозом наличия в магазине
+GET http://api.myexample.localdev/goodyear/shops/1/goods/546973
+Authorization: Bearer d945934d-2f54-45ca-aeee-101316291432
+
+###

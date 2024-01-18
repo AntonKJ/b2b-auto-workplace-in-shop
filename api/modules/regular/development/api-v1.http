@@ -1,0 +1,129 @@
+
+POST http://api.myexample.localdev/regular/order.json
+Authorization: Bearer 8wglNNbGumYPIu5f9XSIScYsA4WvsZh9
+Content-Type: application/json
+
+{
+
+  "shipmentDate": "2019-09-20",
+  "shipmentMethod": "pickup",
+  "shipmentShopId": "1",
+
+  "paymentMethod": "invoice",
+  "comment": "ТЕСТОВЫЙ ЗАКАЗ!",
+
+  "goods": [
+    {
+      "sku": "672220",
+      "quantity": 1
+    }
+  ]
+}
+
+###
+
+GET http://api.myexample.localdev/regular/order/413369/invoice.pdf
+Authorization: Bearer 8wglNNbGumYPIu5f9XSIScYsA4WvsZh9
+
+###
+
+PUT http://api.myexample.localdev/regular/order/413369/cancel.json
+Authorization: Bearer 8wglNNbGumYPIu5f9XSIScYsA4WvsZh9
+
+###
+
+POST http://api.myexample.localdev/regular/shipment.json
+Authorization: Bearer 8wglNNbGumYPIu5f9XSIScYsA4WvsZh9
+Content-Type: application/json
+
+{"goods":[{"sku":"470379","quantity":4}]}
+
+###
+
+POST http://api.myexample.localdev/regular/order.json
+Authorization: Bearer 8wglNNbGumYPIu5f9XSIScYsA4WvsZh9
+
+{
+  "shipmentDate": "2019-04-07",
+  "shipmentMethod": "pickup",
+  "shipmentShopId": "1",
+  "paymentMethod": "cash",
+  "comment": "",
+  "goods": [
+    {
+      "sku": "829473",
+      "quantity": 4
+    }
+  ]
+}
+
+###
+
+POST http://api.myexample.localdev/regular/order.json
+Authorization: Bearer 8wglNNbGumYPIu5f9XSIScYsA4WvsZh9
+Content-Type: application/json
+
+{
+
+  "shipmentDate": "2021-01-11",
+  "shipmentMethod": "pickup",
+  "shipmentShopId": 1,
+
+  "paymentMethod": "invoice",
+  "comment": "ТЕСТОВЫЙ ЗАКАЗ!",
+
+  "goods": [
+    {
+      "sku": "829473",
+      "quantity": 1
+    }
+  ]
+}
+
+###
+
+PUT http://api.myexample.localdev/regular/order/9378/cancel.json
+Authorization: Bearer 8wglNNbGumYPIu5f9XSIScYsA4WvsZh9
+Content-Type: application/json
+
+###
+
+POST http://api.myexample.localdev/regular/order.json
+Authorization: Bearer 8wglNNbGumYPIu5f9XSIScYsA4WvsZh9
+Content-Type: application/json
+
+{
+  "shipmentDate": "2019-09-26",
+  "shipmentMethod": "city_region",
+  "shipmentAddressId": "50ad23ed63406afe4c2492188c89641b",
+  "paymentMethod": "invoice",
+  "comment": "Комментарий к заказу",
+  "goods": [
+    {
+      "sku": "829473",
+      "quantity": 1
+    }
+  ]
+}
+
+###
+
+POST http://api.myexample.localdev/regular/order.json
+Authorization: Bearer 8wglNNbGumYPIu5f9XSIScYsA4WvsZh9
+Content-Type: application/json
+
+{
+  "shipmentMethod": "russia_tc",
+  "shipmentTcId": "pak",
+  "shipmentCity": "Москва",
+  "paymentMethod": "invoice",
+  "comment": "Комментарий к заказу",
+  "goods": [
+    {
+      "sku": "695215",
+      "quantity": 1
+    }
+  ]
+}
+
+###

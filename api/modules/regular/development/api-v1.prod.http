@@ -1,0 +1,61 @@
+
+POST http://vendor.myexample.ru/regular/order.json
+Authorization: Bearer 6768282952a446416ce8cfa0fe39230e
+Content-Type: application/json
+
+{
+
+  "shipmentDate": "2019-09-25",
+  "shipmentMethod": "pickup",
+  "shipmentShopId": "1",
+
+  "paymentMethod": "invoice",
+  "comment": "ТЕСТОВЫЙ ЗАКАЗ!",
+
+  "goods": [
+    {
+      "sku": "672220",
+      "quantity": 1
+    }
+  ]
+}
+
+###
+
+GET http://vendor.myexample.ru/regular/order/410969/invoice.pdf
+Authorization: Bearer 6768282952a446416ce8cfa0fe39230e
+
+###
+
+PUT http://vendor.myexample.ru/regular/order/426320/cancel.json
+Authorization: Bearer 6768282952a446416ce8cfa0fe39230e
+
+###
+
+POST http://vendor.myexample.ru/regular/shipment.json
+Authorization: Bearer 6768282952a446416ce8cfa0fe39230e
+Content-Type: application/json
+
+{"goods":[{"sku":"470379","quantity":4}]}
+
+###
+
+POST http://vendor.myexample.ru/regular/order.json
+Authorization: Bearer 6768282952a446416ce8cfa0fe39230e
+Content-Type: application/json
+
+{
+  "shipmentDate": "2019-09-27",
+  "shipmentMethod": "city_region",
+  "shipmentAddressId": "2b74dd65d5c7d23a96a3f90b43c0ddba",
+  "paymentMethod": "invoice",
+  "comment": "Комментарий к заказу",
+  "goods": [
+    {
+      "sku": "829473",
+      "quantity": 1
+    }
+  ]
+}
+
+###

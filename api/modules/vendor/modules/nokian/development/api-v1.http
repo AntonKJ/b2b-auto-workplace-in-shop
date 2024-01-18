@@ -1,0 +1,213 @@
+
+###
+# MD5: a4e17f985a2ecb0299d2be79adf91e67
+# MD5 -> BASE64: YTRlMTdmOTg1YTJlY2IwMjk5ZDJiZTc5YWRmOTFlNjc=
+# dmlhbm9yX3NoaW5zZXJ2aXNlOjVYak9WNkdpV0d4RA==
+# Accept: application/xml
+#Content-Type: application/xml
+#Accept: application/xml
+
+POST http://api.myexample.localdev/nokian/order
+Authorization: Basic dmlhbm9yX3NoaW5zZXJ2aXNlOjVYak9WNkdpV0d4RA==
+Content-Type: application/xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<request>
+    <entity>ORDER</entity>
+    <action>CREATE</action>
+    <created>2017-07-27 10:23:42</created>
+    <id>00072000</id>
+    <shop-id>Vianor_472</shop-id>
+    <shipment-date>2018-10-06</shipment-date>
+    <shipment-method>PICKUP_ONLINE</shipment-method>
+    <payment-method>CASH</payment-method>
+    <comment><![CDATA[Тестовый заказ]]></comment>
+    <customer-uid>dasha@dasha.ru</customer-uid>
+    <customer-type>PRIVATE_PERSON</customer-type>
+    <customer-person>
+        <firstname><![CDATA[Даша]]></firstname>
+        <lastname><![CDATA[Иванова]]></lastname>
+        <phone>71112223344</phone>
+        <email><![CDATA[dasha@dasha.ru]]></email>
+    </customer-person>
+    <product>
+        <code>T430120</code>
+        <quantity>1</quantity>
+        <price-value>5314.0</price-value>
+    </product>
+</request>
+
+###
+
+POST http://api.myexample.localdev/nokian/order
+Authorization: Basic dmlhbm9yX3NoaW5zZXJ2aXNlOjVYak9WNkdpV0d4RA==
+Content-Type: application/xml
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<request>
+   <entity>ORDER</entity>
+   <action>CREATE</action>
+   <created>2018-10-23 10:00:24</created>
+   <id>00378270</id>
+   <shop-id>Vianor_292</shop-id>
+   <shipment-date>2018-10-23</shipment-date>
+   <shipment-method>PICKUP_ONLINE</shipment-method>
+   <payment-method>CASH</payment-method>
+   <comment><![CDATA[]]></comment>
+   <customer-uid>anonymous</customer-uid>
+   <customer-type>PRIVATE_PERSON</customer-type>
+   <customer-person>
+       <firstname><![CDATA[Владислав]]></firstname>
+       <lastname><![CDATA[Владислав]]></lastname>
+       <phone>79218696952</phone>
+       <email><![CDATA[vlad.solodovnikov@mail.ru]]></email>
+   </customer-person>
+   <product>
+       <code>T430535</code>
+       <quantity>1</quantity>
+       <price-value>33680.0</price-value>
+   </product>
+</request>
+
+###
+
+POST http://vendor.myexample.ru/nokian/order
+Authorization: Basic dmlhbm9yX3NoaW5zZXJ2aXNlOjVYak9WNkdpV0d4RA==
+Content-Type: application/xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<request>
+    <entity>ORDER</entity>
+    <action>CREATE</action>
+    <created>2017-09-11 10:23:42</created>
+    <id>00072000</id>
+    <shop-id>Vianor_296</shop-id>
+    <shipment-date>2018-10-11</shipment-date>
+    <shipment-method>PICKUP_ONLINE</shipment-method>
+    <payment-method>CASH</payment-method>
+    <comment><![CDATA[Тестовый заказ]]></comment>
+    <customer-uid>dasha@dasha.ru</customer-uid>
+    <customer-type>PRIVATE_PERSON</customer-type>
+    <customer-person>
+        <firstname><![CDATA[Даша]]></firstname>
+        <lastname><![CDATA[Иванова]]></lastname>
+        <phone>71112223344</phone>
+        <email><![CDATA[dasha@dasha.ru]]></email>
+    </customer-person>
+    <product>
+        <code>T430120</code>
+        <quantity>1</quantity>
+        <price-value>5314.0</price-value>
+    </product>
+</request>
+
+###
+
+POST https://vendor.myexample.ru/nokian/order
+Authorization: Basic dmlhbm9yX3NoaW5zZXJ2aXNlOjVYak9WNkdpV0d4RA==
+Accept: application/xml
+Content-Type: application/xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<request>
+    <entity>ORDER</entity>
+    <action>CREATE</action>
+    <created>2018-09-12 11:25:42</created>
+    <id>1253451109</id>
+    <shop-id>Vianor_165</shop-id>
+    <shipment-date>2018-09-15</shipment-date>
+    <shipment-method>PICKUP_ONLINE</shipment-method>
+    <payment-method>CASH</payment-method>
+    <comment><![CDATA[Тестовый заказ]]></comment>
+    <customer-uid>dasha@dasha.ru</customer-uid>
+    <customer-type>PRIVATE_PERSON</customer-type>
+    <customer-person>
+        <firstname><![CDATA[Даша]]></firstname>
+        <lastname><![CDATA[Иванова]]></lastname>
+        <phone>7920000001</phone>
+        <email><![CDATA[dasha@dasha.ru]]></email>
+    </customer-person>
+    <product>
+        <code>209813</code>
+        <quantity>1</quantity>
+        <price-value>5314.0</price-value>
+    </product>
+</request>
+
+###
+
+POST https://services2.nokiantyres.com:444/vianorpartnerintegration/updateOrder
+Authorization: Basic dmlhbm9yX3NoaW5zZXJ2aXNlOjVYak9WNkdpV0d4RA==
+Content-Type: application/xml; charset=UTF-8
+
+<?xml version="1.0" encoding="UTF-8"?>
+<request>
+    <partner-order-id>73832</partner-order-id>
+    <entity>ORDER</entity>
+    <order-status>CANCELLED</order-status>
+    <reason>OUTDATED</reason>
+</request>
+
+###
+
+POST http://api.myexample.localdev/nokian/order/status
+Content-Type: application/xml; charset=UTF-8
+Authorization: Basic dmlhbm9yX3NoaW5zZXJ2aXNlOjVYak9WNkdpV0d4RA==
+
+<?xml version="1.0" encoding="UTF-8"?>
+<request>
+    <partner-order-id>738395</partner-order-id>
+    <action>UPDATE</action>
+    <entity>ORDER</entity>
+    <order-status>CANCELLED</order-status>
+    <reason>REFUSAL</reason>
+</request>
+
+###
+
+POST http://vendor.myexample.ru/nokian/order/status
+Content-Type: application/xml; charset=UTF-8
+Authorization: Basic dmlhbm9yX3NoaW5zZXJ2aXNlOjVYak9WNkdpV0d4RA==
+
+<?xml version="1.0" encoding="UTF-8"?>
+<request>
+    <partner-order-id>738395</partner-order-id>
+    <action>UPDATE</action>
+    <entity>ORDER</entity>
+    <order-status>CANCELLED</order-status>
+    <reason>REFUSAL</reason>
+</request>
+
+###
+
+POST http://api.myexample.localdev/nokian/store/check
+Content-Type: application/xml; charset=UTF-8
+Authorization: Basic dmlhbm9yX3NoaW5zZXJ2aXNlOjVYak9WNkdpV0d4RA==
+
+<?xml version="1.0" encoding="UTF-8"?>
+<request>
+    <entity>STORE</entity>
+    <action>CHECK</action>
+    <shop-id>Vianor_296</shop-id>
+    <product>
+        <code>T430120</code>
+    </product>
+</request>
+
+###
+
+POST http://vendor.myexample.ru/nokian/order/status
+Authorization: Basic dmlhbm9yX3NoaW5zZXJ2aXNlOjVYak9WNkdpV0d4RA==
+Content-Type: application/xml; charset=UTF-8
+
+<?xml version="1.0" encoding="UTF-8"?>
+<request>
+    <partner-order-id>738395</partner-order-id>
+    <action>UPDATE</action>
+    <entity>ORDER</entity>
+    <order-status>CANCELLED</order-status>
+    <reason>REFUSAL</reason>
+</request>
+
+###
+

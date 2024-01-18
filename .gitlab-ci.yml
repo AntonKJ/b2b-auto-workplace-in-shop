@@ -1,0 +1,32 @@
+image: ubuntu
+
+before_script:
+  - apt-get update -qq
+  - apt-get install -y -qq sshpass
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+
+stages:
+  - deploy_testing
+#  - deploy_stage
+
+deploy_testing_app:
+  stage: deploy_testing
+  only:
+    - testing
+  script:
+    - echo "============== START BUILD AND DEPLOY TESTING =============="
+    - sshpass -p "$SSH_CONNECT_VALUE" ssh $SSH_USER@$SSH_ADDRESS -p $SSH_PORT "$TESTING_DEPLOY_SCRIPT"
+
+#deploy_stage_app:
+#  stage: deploy_stage
+#  only:
+#    - stage
+#  script:
+#    - echo "============== START BUILD AND DEPLOY STAGE =============="
+#    - sshpass -p "$SSH_CONNECT_VALUE" ssh $SSH_USER@$SSH_ADDRESS -p $SSH_PORT "$STAGE_DEPLOY_SCRIPT"
+#  when: manual

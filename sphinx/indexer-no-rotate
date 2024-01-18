@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+sudo -u sphinxsearch indexer -c ./sphinx.conf myexample_from_tsv_tyre
+sudo -u sphinxsearch indexer -c ./sphinx.conf myexample_from_tsv_disk
+sudo -u sphinxsearch indexer -c ./sphinx.conf myexample_auto
+
+# waiting processes
+wait

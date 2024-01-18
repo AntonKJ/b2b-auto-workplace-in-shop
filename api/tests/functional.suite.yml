@@ -1,0 +1,8 @@
+class_name: FunctionalTester
+modules:
+  enabled:
+    - Yii2
+    - REST:
+        url: http://api.myexample.localdev
+        depends: PhpBrowser
+        part: XML

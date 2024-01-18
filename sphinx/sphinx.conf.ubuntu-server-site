@@ -1,0 +1,764 @@
+## Конфигурационный файл Sphinx-а для индексации каталога
+
+source base
+{
+
+	type	= mysql
+
+	sql_host	= localhost
+	sql_user	= sst_usr 
+	sql_pass	= s4eraplimake 
+	sql_db		= sst_base_b2b 
+	sql_port	= 3306
+
+	sql_sock    = /var/run/mysqld/mysqld.sock
+	mysql_connect_flags = 32
+
+}
+
+source myexample_tyre_base : base
+{
+
+	sql_attr_string = good_id
+
+	sql_attr_string = sku
+	sql_attr_string = sku_1c
+	sql_attr_string = sku_brand
+
+	sql_attr_uint = type
+	sql_field_string = good_words
+
+	sql_attr_uint = brand_id
+	sql_field_string = brand_title
+	sql_attr_string = brand_code
+	sql_attr_string = brand_slug
+	sql_attr_string = brand_logo
+	sql_attr_uint = brand_sortorder
+
+	sql_attr_uint = model_id
+	sql_field_string = model_title
+	sql_attr_string = model_slug
+	sql_attr_uint = model_sortorder
+
+	sql_attr_json = model_params
+	sql_attr_json = good_params
+	sql_attr_json = variation_params
+
+	sql_attr_json = offer
+
+	sql_attr_multi = uint available_shop_id from query; \
+	SELECT DISTINCT \
+	    crc32(CONCAT_WS('-', 'tyre', ots.order_type_group_id, zp.zone_id, ss.item_idx)) id, \
+	    ss.shop_id \
+	FROM shop_stock ss \
+	INNER JOIN assort g ON g.idx = ss.item_idx \
+	INNER JOIN zone_price zp ON zp.item_idx = ss.item_idx AND zp.price > 0 \
+	INNER JOIN ( \
+	    SELECT \
+		ots.item_idx, \
+		ots.order_type_group_id, \
+		MAX(IFNULL(ots.amount,0)) amount \
+	    FROM order_type_stock ots \
+	    GROUP BY \
+		ots.item_idx, ots.order_type_group_id \
+	) ots ON ots.item_idx = ss.item_idx AND (ots.amount > 0) \
+	WHERE \
+	    ss.amount > 0
+
+	sql_attr_multi = uint hidden_for_user_id from query; \
+	SELECT DISTINCT \
+	    crc32(CONCAT_WS('-', 'tyre', ots.order_type_group_id, zp.zone_id, g.idx)) id, \
+	    oubh.user_id \
+	FROM opt_users_brands_hide oubh \
+	INNER JOIN producer p ON p.id = oubh.entity_code AND oubh.entity_type = 'tyre' \
+	INNER JOIN assort g ON g.prod_code = p.code \
+	INNER JOIN zone_price zp ON zp.item_idx = g.idx AND zp.price > 0 \
+	INNER JOIN ( \
+	    SELECT \
+		ots.item_idx, \
+		ots.order_type_group_id, \
+		MAX(IFNULL(ots.amount,0)) amount \
+	    FROM order_type_stock ots \
+	    GROUP BY \
+		ots.item_idx, ots.order_type_group_id \
+	) ots ON ots.item_idx = g.idx AND (ots.amount > 0)
+
+	sql_attr_multi = uint auto_modification from query; \
+	SELECT * FROM (SELECT null id, null auto_modification_id) am WHERE 1=0
+
+#	sql_joined_field = auto_modification_words from query; \
+#	 SELECT \
+#	     crc32(CONCAT_WS('-', 'tyre', ots.order_type_group_id, zp.zone_id, g.idx)) id, \
+#	     CONCAT_WS(' ', am.prod, am.model) auto_modification_words \
+#	 FROM auto_tyres at \
+#	 INNER JOIN auto_models am ON am.model_id = at.model_id \
+#	 INNER JOIN assort g ON g.sz = at.sz \
+#	 INNER JOIN zone_price zp ON zp.item_idx = g.idx AND zp.price > 0 \
+#	 INNER JOIN order_type_stock ots ON ots.item_idx = g.idx AND (ots.amount > 0 OR zp.preorder = 1) \
+#	 ORDER BY id ASC
+
+	sql_attr_float = price
+	sql_attr_uint = zone_id
+
+	sql_attr_uint = amount
+	sql_attr_uint = order_type_group_id
+	sql_attr_json = order_types
+
+	sql_ranged_throttle = 0
+
+}
+
+source myexample_tyre_main : myexample_tyre_base
+{
+
+	sql_query_pre		= SET NAMES utf8
+	sql_query_pre		= SET SESSION query_cache_type=OFF
+	sql_query_pre		= SET SESSION group_concat_max_len = 32000
+	#sql_query_post_index	 = INSERT INTO SphinxIndex (`name`) VALUES ('myexample_main')
+
+	sql_query = \
+	SELECT \
+	    crc32(CONCAT_WS('-', 'tyre', ots.order_type_group_id, zp.zone_id, g.idx)) id, \
+	    10 `type`, \
+	    CONCAT_WS(' ', 'шина', 'шины', 'резина') good_words, \
+	    g.idx `good_id`, \
+	    g.idx `sku`, \
+	    g.manuf_code `sku_brand`, \
+	    g.code_1c `sku_1c`, \
+	    b.id `brand_id`, \
+	    b.code `brand_code`, \
+	    b.name `brand_title`, \
+	    b.url `brand_slug`, \
+	    b.logo `brand_logo`, \
+	    b.Position `brand_sortorder`, \
+	    m.id `model_id`, \
+	    m.name `model_title`, \
+	    m.url `model_slug`, \
+	    m.sortorder `model_sortorder`, \
+	    JSON_OBJECT( \
+	      'logo', m.logo, \
+	      'type', m.type, \
+	      'season', LOWER(m.season), \
+	      'pin', IF(LOWER(m.pin) = 'y', 1, 0), \
+	      'runflat', CAST(g.runflat AS UNSIGNED) \
+	    ) AS model_params, \
+	    JSON_OBJECT( \
+	      'radius', CAST(REPLACE(REPLACE(UPPER(g.rad), 'R', ''), 'C', '') AS DECIMAL(5, 2)), \
+	      'width', CAST(g.width AS DECIMAL(5, 2)), \
+	      'profile', CAST(g.pr AS DECIMAL(5, 2)), \
+	      'commerce', IF(UPPER(g.rad) LIKE '%C', 1, 0), \
+	      'speed_rating', UPPER(g.cc), \
+	      'load_index', g.in_type, \
+	      'tLong', CAST(g.tlong AS DECIMAL(8, 4)), \
+	      'size', g.sz \
+	    ) AS good_params, \
+	    '{}' AS variation_params, \
+	    JSON_OBJECT( \
+		'discount', IF(g.discount IS NULL, 0, CAST(g.discount AS UNSIGNED)), \
+		'new', IF(m.new IS NULL, 0, CAST(m.new AS UNSIGNED)), \
+		'preorder', IF(zp.preorder IS NULL, 0, CAST(zp.preorder AS UNSIGNED)), \
+		'special', IF(zp.special IS NULL, 0, CAST(zp.special AS UNSIGNED)), \
+		'sale', IF(zp.sale IS NULL OR zp.sale = 0, 0, 1), \
+		'offer', IF(zp.offer IS NULL, 0, CAST(zp.offer AS UNSIGNED)) \
+	    ) AS offer, \
+	    \
+	    zp.zone_id AS zone_id, \
+	    zp.price AS price, \
+			ots.order_type_group_id AS order_type_group_id, \
+			ots.amount AS amount, \
+<<<<<<< Updated upstream
+            ots.order_types AS order_types \
+            \
+        FROM assort g \
+        INNER JOIN producer b ON b.code = g.prod_code \
+        INNER JOIN ( \
+                   SELECT \
+                     MAX(id)        id, \
+                     MAX(code)      code, \
+                     MAX(prod_code) prod_code, \
+                     MAX(name)      name, \
+                     MAX(url)       url, \
+                     MAX(type)      type, \
+                     MAX(season)    season, \
+                     MAX(pin)       pin, \
+                     MAX(new)       new, \
+                     MAX(logo)      logo, \
+                     MAX(position)  sortorder \
+                   FROM \
+                     model \
+                   WHERE \
+                     is_published = 1 \
+                   GROUP BY \
+                     prod_code, code \
+                 ) m ON m.code = g.p_t AND m.prod_code = b.code \
+        INNER JOIN zone_price zp ON zp.item_idx = g.idx AND zp.price > 0 \
+        INNER JOIN ( \
+            SELECT \
+                ots.item_idx, \
+                ots.order_type_group_id, \
+                MAX(IFNULL(ots.amount,0)) amount, \
+                CONCAT('[', \
+                    GROUP_CONCAT( \
+                        JSON_OBJECT( \
+                            'id', ots.order_type_id, \
+                            'amount', ots.amount \
+                        ) \
+                    ) \
+                , ']') order_types \
+            FROM order_type_stock ots \
+            GROUP BY \
+                ots.item_idx, ots.order_type_group_id \
+        ) ots ON ots.item_idx = g.idx AND ots.amount > 0 \
+        WHERE \
+            g.prod_code != '' AND g.prod_code IS NOT NULL
+=======
+	    ots.order_types AS order_types \
+	    \
+	FROM assort g \
+	INNER JOIN producer b ON b.code = g.prod_code \
+	INNER JOIN ( \
+		   SELECT \
+		     MAX(id)	    id, \
+		     MAX(code)	    code, \
+		     MAX(prod_code) prod_code, \
+		     MAX(name)	    name, \
+		     MAX(url)	    url, \
+		     MAX(type)	    type, \
+		     MAX(season)    season, \
+		     MAX(pin)	    pin, \
+		     MAX(new)	    new, \
+		     MAX(logo)	    logo, \
+		     MAX(position)  sortorder \
+		   FROM \
+		     model \
+		   WHERE \
+		     is_published = 1 \
+		   GROUP BY \
+		     prod_code, code \
+		 ) m ON m.code = g.p_t AND m.prod_code = b.code \
+	INNER JOIN zone_price zp ON zp.item_idx = g.idx AND zp.price > 0 \
+	INNER JOIN ( \
+	    SELECT \
+		ots.item_idx, \
+		ots.order_type_group_id, \
+		MAX(IFNULL(ots.amount,0)) amount, \
+		CONCAT('[', \
+		    GROUP_CONCAT( \
+			JSON_OBJECT( \
+			    'id', ots.order_type_id, \
+			    'amount', ots.amount \
+			) \
+		    ) \
+		, ']') order_types \
+	    FROM order_type_stock ots \
+	    GROUP BY \
+		ots.item_idx, ots.order_type_group_id \
+	) ots ON ots.item_idx = g.idx AND ots.amount > 0
+>>>>>>> Stashed changes
+}
+
+source myexample_disk_base : base
+{
+
+	sql_attr_string = good_id
+
+	sql_attr_uint = type
+	sql_field_string = good_words
+
+	sql_attr_string = sku
+	sql_attr_string = sku_1c
+	sql_attr_string = sku_brand
+
+	sql_attr_uint = brand_id
+	sql_field_string = brand_title
+	sql_attr_string = brand_code
+	sql_attr_string = brand_slug
+	sql_attr_string = brand_logo
+	sql_attr_uint = brand_sortorder
+
+	sql_attr_uint = model_id
+	sql_field_string = model_title
+	sql_attr_string = model_slug
+	sql_attr_uint = model_sortorder
+
+	sql_attr_json = model_params
+	sql_attr_json = good_params
+	sql_attr_json = variation_params
+
+	sql_attr_json = offer
+
+	sql_attr_multi = uint available_shop_id from query; \
+	SELECT DISTINCT \
+	    crc32(CONCAT_WS('-', 'disk', ots.order_type_group_id, zp.zone_id, ss.item_idx)) id, \
+	    ss.shop_id \
+	FROM shop_stock ss \
+	INNER JOIN disks g ON g.disk_id = ss.item_idx \
+	INNER JOIN zone_price zp ON zp.item_idx = ss.item_idx AND zp.price > 0 \
+	INNER JOIN ( \
+	    SELECT \
+		ots.item_idx, \
+		ots.order_type_group_id, \
+		MAX(IFNULL(ots.amount,0)) amount \
+	    FROM order_type_stock ots \
+	    GROUP BY \
+		ots.item_idx, ots.order_type_group_id \
+	) ots ON ots.item_idx = ss.item_idx AND ots.amount > 0 \
+	WHERE \
+	    ss.amount > 0
+
+	sql_attr_multi = uint auto_modification from query; \
+<<<<<<< Updated upstream
+        SELECT DISTINCT \
+            crc32(CONCAT_WS('-', 'disk', ots.order_type_group_id, zp.zone_id, ad.disk_id)) id, \
+            crc32(ad.automodel_code_1c) auto_modification_id \
+        FROM auto_disks ad \
+        INNER JOIN disks g ON g.disk_id = ad.disk_id \
+        INNER JOIN zone_price zp ON zp.item_idx = ad.disk_id AND zp.price > 0 \
+        INNER JOIN ( \
+            SELECT \
+                ots.item_idx, \
+                ots.order_type_group_id, \
+                MAX(IFNULL(ots.amount,0)) amount \
+            FROM order_type_stock ots \
+            GROUP BY \
+                ots.item_idx, ots.order_type_group_id \
+        ) ots ON ots.item_idx = ad.disk_id AND ots.amount > 0 \
+=======
+	SELECT DISTINCT \
+	    crc32(CONCAT_WS('-', 'disk', ots.order_type_group_id, zp.zone_id, ad.disk_id)) id, \
+	    crc32(ad.auto_model_id) auto_modification_id \
+	FROM auto_disks ad \
+	INNER JOIN disks g ON g.disk_id = ad.disk_id \
+	INNER JOIN zone_price zp ON zp.item_idx = ad.disk_id AND zp.price > 0 \
+	INNER JOIN ( \
+	    SELECT \
+		ots.item_idx, \
+		ots.order_type_group_id, \
+		MAX(IFNULL(ots.amount,0)) amount \
+	    FROM order_type_stock ots \
+	    GROUP BY \
+		ots.item_idx, ots.order_type_group_id \
+	) ots ON ots.item_idx = ad.disk_id AND ots.amount > 0 \
+>>>>>>> Stashed changes
+
+	sql_attr_multi = uint hidden_for_user_id from query; \
+	SELECT DISTINCT \
+	    crc32(CONCAT_WS('-', 'disk', ots.order_type_group_id, zp.zone_id, g.disk_id)) id, \
+	    oubh.user_id \
+	FROM opt_users_brands_hide oubh \
+	INNER JOIN d_producer p ON p.d_producer_id = oubh.entity_code AND oubh.entity_type = 'disk' \
+	INNER JOIN disks g ON g.prod_code = p.code \
+	INNER JOIN zone_price zp ON zp.item_idx = g.disk_id AND zp.price > 0 \
+	INNER JOIN ( \
+	    SELECT \
+		ots.item_idx, \
+		ots.order_type_group_id, \
+		MAX(IFNULL(ots.amount,0)) amount \
+	    FROM order_type_stock ots \
+	    GROUP BY \
+		ots.item_idx, ots.order_type_group_id \
+	) ots ON ots.item_idx = g.disk_id AND ots.amount > 0
+
+#	sql_joined_field = auto_modification_words from query; \
+#	 SELECT \
+#	     crc32(CONCAT_WS('-', 'disk', ots.order_type_group_id, zp.zone_id, ad.disk_id)) id, \
+#	     CONCAT_WS(' ', am.prod, am.model) auto_modification_words \
+#	 FROM auto_disks ad \
+#	 INNER JOIN auto_models am ON am.model_id = ad.auto_model_id \
+#	 INNER JOIN disks g ON g.disk_id = ad.disk_id \
+#	 INNER JOIN zone_price zp ON zp.item_idx = ad.disk_id AND zp.price > 0 \
+#	 INNER JOIN order_type_stock ots ON ots.item_idx = ad.disk_id AND (ots.amount > 0 OR zp.preorder = 1) \
+#	 ORDER BY id ASC
+
+	sql_attr_float = price
+	sql_attr_uint = zone_id
+
+	sql_attr_uint = amount
+	sql_attr_uint = order_type_group_id
+	sql_attr_json = order_types
+
+	sql_ranged_throttle = 0
+
+}
+
+source myexample_disk_main : myexample_disk_base
+{
+
+	sql_query_pre		= SET NAMES utf8
+	sql_query_pre		= SET SESSION query_cache_type=OFF
+	#sql_query_pre		 = SET SESSION group_concat_max_len = 32000
+	#sql_query_post_index	 = INSERT INTO SphinxIndex (`name`) VALUES ('myexample_main')
+
+	sql_query = \
+		SELECT \
+		    crc32(CONCAT_WS('-', 'disk', ots.order_type_group_id, zp.zone_id, g.disk_id)) id, \
+			20 `type`, \
+			CONCAT_WS(' ', 'диск', 'диски', 'колесо') good_words, \
+			g.disk_id `good_id`, \
+			g.disk_id `sku`, \
+			g.manuf_code `sku_brand`, \
+			g.disk_id `sku_1c`, \
+			\
+			b.d_producer_id `brand_id`, \
+			b.code `brand_code`, \
+			b.name `brand_title`, \
+			b.code `brand_slug`, \
+			b.logo `brand_logo`, \
+			b.pos `brand_sortorder`, \
+			\
+			m.id `model_id`, \
+			m.title `model_title`, \
+			m.slug `model_slug`, \
+			m.sortorder `model_sortorder`, \
+			\
+			JSON_OBJECT( \
+			    'material', JSON_OBJECT( \
+		    'id', mt.id, \
+		    'title', mt.title, \
+		    'slug', mt.slug, \
+		    'sortorder', CONCAT(mt.sortorder, ' ', mt.title) \
+		) \
+			) as model_params, \
+			\
+			JSON_OBJECT( \
+				'id', mv.id, \
+				'title', mv.title, \
+				'slug', mv.slug, \
+				'sortorder', CONCAT(mv.sortorder, ' ', mv.title), \
+				'color', IF(mc.id IS NULL, NULL, JSON_OBJECT( \
+					'id', mc.id, \
+					'title', mc.title, \
+					'slug', mc.slug, \
+					'sortorder', CONCAT(mc.sortorder, ' ', mc.title) \
+				)) \
+			) as variation_params, \
+			\
+			JSON_OBJECT( \
+				'diameter', CAST(g.diameter AS DECIMAL(5,2)), \
+				'width', CAST(g.width AS DECIMAL(5,2)), \
+				'pn', CAST(CAST(g.pn AS CHAR) AS UNSIGNED), \
+				'pcd', CAST(g.pcd AS DECIMAL(5,2)), \
+				'et', CAST(g.et AS DECIMAL(5,2)), \
+				'cb', CAST(g.dia AS DECIMAL(5,2)) \
+			) as good_params, \
+			\
+			JSON_OBJECT( \
+				'preorder', CAST(zp.preorder AS UNSIGNED), \
+				'special', CAST(zp.special AS UNSIGNED), \
+				'sale', IF(zp.sale IS NULL OR zp.sale = 0, 0, 1), \
+				'offer', CAST(zp.offer AS UNSIGNED) \
+			) as offer, \
+			\
+			zp.zone_id AS zone_id, \
+			zp.price AS price, \
+			ots.order_type_group_id AS order_type_group_id, \
+			ots.amount AS amount, \
+	    ots.order_types AS order_types \
+			\
+		FROM disks g \
+		INNER JOIN d_producer b ON b.d_producer_id = g.brand_id AND b.is_published = 1 \
+		INNER JOIN d_model m ON m.id = g.model_id AND m.status = 1 \
+		INNER JOIN d_model_type mt ON mt.id = m.type_id AND mt.status = 1\
+		INNER JOIN d_model_variation mv ON mv.id = g.variation_id AND mv.status = 1 \
+		LEFT JOIN d_model_color mc ON mc.id = mv.color_id AND mc.status = 1 \
+		INNER JOIN zone_price zp ON zp.item_idx = g.disk_id AND zp.price > 0 \
+	INNER JOIN ( \
+	    SELECT \
+		ots.item_idx, \
+		ots.order_type_group_id, \
+		MAX(IFNULL(ots.amount,0)) amount, \
+		CONCAT('[', \
+		    GROUP_CONCAT( \
+			JSON_OBJECT( \
+			    'id', ots.order_type_id, \
+			    'amount', ots.amount \
+			) \
+		    ) \
+		, ']') order_types \
+	    FROM order_type_stock ots \
+	    GROUP BY \
+		ots.item_idx, ots.order_type_group_id \
+	) ots ON ots.item_idx = g.disk_id AND ots.amount > 0
+
+}
+
+source myexample_auto_base : base
+{
+
+	sql_attr_string = modification_id
+
+	sql_field_string = brand
+	sql_field_string = model
+
+	sql_attr_string = brand_slug
+	sql_attr_string = model_slug
+	sql_attr_string = modification_slug
+
+	sql_attr_uint = modification_start
+	sql_attr_uint = modification_end
+
+	sql_ranged_throttle = 0
+
+}
+
+source myexample_auto_main : myexample_auto_base
+{
+
+	sql_query_pre		= SET NAMES utf8
+	sql_query_pre		= SET SESSION query_cache_type=OFF
+	#sql_query_pre		 = SET SESSION group_concat_max_len = 32000
+	#sql_query_post_index	 = INSERT INTO SphinxIndex (`name`) VALUES ('myexample_auto')
+
+	sql_query = \
+		SELECT \
+		    crc32(model_id) id, \
+		    model_id modification_id, \
+		    prod brand, \
+		    model, \
+		    ystart modification_start, \
+		    yend modification_end, \
+		    brand_slug, \
+		    model_slug, \
+		    modification_slug \
+			\
+		FROM auto_models
+
+}
+
+#######################
+#
+# Описываем индексы
+#
+#######################
+
+index myexample_tyre
+{
+
+	source = myexample_tyre_main
+	path = /srv/www10/sphinx/index/myexample_tyre
+
+	docinfo = extern
+	morphology = stem_enru
+	min_infix_len = 2
+
+}
+
+index myexample_disk
+{
+
+	source = myexample_disk_main
+	path = /srv/www10/sphinx/index/myexample_disk
+
+	docinfo = extern
+	morphology = stem_enru
+	min_infix_len = 2
+
+}
+
+index myexample_auto
+{
+
+	source = myexample_auto_main
+	path = /srv/www10/sphinx/index/myexample_auto
+
+	docinfo = extern
+	morphology = stem_enru
+	min_infix_len = 2
+
+}
+
+index myexample_tyre_rt
+{
+
+	type = rt
+	path = /srv/www10/sphinx/index/myexample_tyre_rt
+
+	morphology = stem_enru
+	min_infix_len = 2
+
+    # Размер чанка для RT
+    rt_mem_limit = 256M
+
+    # Описание атрибутов
+	rt_attr_string = good_id
+
+	rt_attr_string = sku
+	rt_attr_string = sku_1c
+	rt_attr_string = sku_brand
+
+	rt_attr_uint = type
+    rt_field = good_words
+
+	rt_attr_uint = brand_id
+	rt_field = brand_title
+	rt_attr_string = brand_code
+	rt_attr_string = brand_slug
+	rt_attr_string = brand_logo
+	rt_attr_uint = brand_sortorder
+
+	rt_attr_uint = model_id
+	rt_field = model_title
+	rt_attr_string = model_slug
+	rt_attr_uint = model_sortorder
+
+	rt_attr_json = model_params
+	rt_attr_json = good_params
+	rt_attr_json = variation_params
+
+	rt_attr_json = offer
+
+	rt_attr_multi = available_shop_id
+
+	rt_attr_multi = hidden_for_user_id
+
+	rt_attr_multi = auto_modification
+
+	rt_attr_float = price
+	rt_attr_uint = zone_id
+
+	rt_attr_uint = amount
+	rt_attr_uint = order_type_group_id
+	rt_attr_json = order_types
+
+}
+
+index myexample_disk_rt
+{
+
+	type = rt
+	path = /srv/www10/sphinx/index/myexample_disk_rt
+
+	morphology = stem_enru
+	min_infix_len = 2
+
+	# Размер чанка для RT
+	rt_mem_limit = 256M
+
+	# Описание атрибутов
+	rt_attr_string = good_id
+
+	rt_attr_string = sku
+	rt_attr_string = sku_1c
+	rt_attr_string = sku_brand
+
+	rt_attr_uint = type
+	rt_field = good_words
+
+	rt_attr_uint = brand_id
+	rt_field = brand_title
+	rt_attr_string = brand_code
+	rt_attr_string = brand_slug
+	rt_attr_string = brand_logo
+	rt_attr_uint = brand_sortorder
+
+	rt_attr_uint = model_id
+	rt_field = model_title
+	rt_attr_string = model_slug
+	rt_attr_uint = model_sortorder
+
+	rt_attr_json = model_params
+	rt_attr_json = good_params
+	rt_attr_json = variation_params
+
+	rt_attr_json = offer
+
+	rt_attr_multi = available_shop_id
+
+	rt_attr_multi = hidden_for_user_id
+
+	rt_attr_multi = auto_modification
+
+	rt_attr_float = price
+	rt_attr_uint = zone_id
+
+	rt_attr_uint = amount
+	rt_attr_uint = order_type_group_id
+	rt_attr_json = order_types
+
+}
+
+index myexample
+{
+
+	type = distributed
+
+	local = myexample_tyre_rt
+	local = myexample_disk_rt
+
+}
+
+#######################
+#
+# Настройки индексатора
+#
+#######################
+
+indexer
+{
+	mem_limit = 256M
+}
+
+#######################
+#
+# Настройка демона-поисковика
+#
+#######################
+
+searchd
+{
+	# [hostname:]port[:protocol], or /unix/socket/path to listen on
+	# known protocols are 'sphinx' (SphinxAPI) and 'mysql41' (SphinxQL)
+	#
+	# multi-value, multiple listen points are allowed
+	# optional, defaults are 9312:sphinx and 9306:mysql41, as below
+	#
+	# listen			= 127.0.0.1
+	# listen			= 192.168.0.1:9312
+	# listen			= 9312
+	listen			= /var/run/sphinxsearch/searchd.sock
+	listen			= 127.0.0.1:9312
+	listen			= 127.0.0.1:9307:mysql41
+
+	qcache_max_bytes = 0
+
+	# log file, searchd run info is logged here
+	# optional, default is 'searchd.log'
+	log			= /var/log/sphinxsearch/searchd.log
+
+	# query log file, all search queries are logged here
+	# optional, default is empty (do not log queries)
+	query_log		= /var/log/sphinxsearch/query.log
+
+	# client read timeout, seconds
+	# optional, default is 5
+	read_timeout		= 5
+
+	# request timeout, seconds
+	# optional, default is 5 minutes
+	client_timeout		= 300
+
+	# maximum amount of children to fork (concurrent searches to run)
+	# optional, default is 0 (unlimited)
+	max_children		= 30
+
+	# PID file, searchd process ID file name
+	# mandatory
+	pid_file		= /var/run/sphinxsearch/searchd.pid
+
+	# multi-processing mode (MPM)
+	# known values are none, fork, prefork, and threads
+	# optional, default is fork
+	#
+	workers			= threads # for RT to work
+
+	# default server-wide collation
+	# optional, default is libc_ci
+	#
+	collation_server = utf8_general_ci
+
+
+	# server-wide locale for libc based collations
+	# optional, default is C
+	#
+	collation_libc_locale = ru_RU.utf8
+}

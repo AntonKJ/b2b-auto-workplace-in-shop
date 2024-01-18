@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# sudo -u sphinxsearch indexer -c ./sphinx.conf --rotate --all
+
+sudo -u sphinxsearch indexer -c ./sphinx.conf --rotate myexample_from_tsv_tyre
+sudo -u sphinxsearch indexer -c ./sphinx.conf --rotate myexample_from_tsv_disk
+sudo -u sphinxsearch indexer -c ./sphinx.conf --rotate myexample_auto
+
+# waiting processes
+wait
+
+sleep 5
+
+#CREATE INDEX model_params_season ON myexample_rt_tyre(model_params.season);
+#CREATE INDEX model_params_pin ON myexample_rt_tyre(INTEGER(model_params.pin));
+#CREATE INDEX good_params_radius ON myexample_rt_tyre(DOUBLE(good_params.radius));
+#CREATE INDEX good_params_width ON myexample_rt_tyre(DOUBLE(good_params.width));
+#CREATE INDEX good_params_profile ON myexample_rt_tyre(DOUBLE(good_params.profile));
+#CREATE INDEX good_params_commerce ON myexample_rt_tyre(INTEGER(good_params.commerce));
+
+mysql -h 127.0.0.1 -P 9307 << here_doc
+ATTACH INDEX myexample_from_tsv_tyre TO RTINDEX myexample_rt_tyre WITH TRUNCATE;
+ATTACH INDEX myexample_from_tsv_disk TO RTINDEX myexample_rt_disk WITH TRUNCATE;
+here_doc

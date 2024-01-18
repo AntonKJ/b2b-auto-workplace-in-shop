@@ -1,0 +1,25 @@
+<?php
+return [
+	[
+		'id' => '3',
+		'email' => '2@test.su',
+		'pass' => '2222',
+		'price_category' => '2',
+		'last_visit_tmstmp' => '1573459678',
+		'code_1c' => '8531314',
+		'name' => 'name',
+		'fullname' => 'fullname',
+		'ou_category_id' => '2',
+		'has_credit' => '0',
+		'bonus' => '23983,2',
+		'credit' => '200000.0 руб.',
+		'region_id' => '19',
+		'balance' => '0',
+		'is_active' => '1',
+		'ip' => '127.0.0.1',
+		'num_visits' => '113',
+		'ip2' => '10.10.10.1',
+		'allowed_paytypes' => '3',
+		'is_api_active' => '1',
+	],
+];

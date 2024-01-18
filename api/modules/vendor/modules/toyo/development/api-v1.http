@@ -1,0 +1,32 @@
+###
+# Список всех товаров
+
+GET http://api.myexample.localdev/toyo/goods
+Authorization: Bearer 1745fb95-6480-408e-818e-165c10240c6f
+
+###
+# Список точек
+
+#GET http://vendor.myexample.ru/toyo/shops
+GET http://api.myexample.localdev/toyo/shops
+Authorization: Bearer 1745fb95-6480-408e-818e-165c10240c6f
+
+###
+# Описание точки
+
+GET http://api.myexample.localdev/toyo/shops/657
+Authorization: Bearer 1745fb95-6480-408e-818e-165c10240c6f
+
+###
+# Товары на точке с наличием
+
+GET https://vendor.myexample.ru/toyo/shops/657/goods
+Authorization: Bearer 1745fb95-6480-408e-818e-165c10240c6f
+
+###
+# Доступность товара на точке с прогнозом
+
+GET http://api.myexample.localdev/toyo/shops/657/goods/NW00052
+Authorization: Bearer 1745fb95-6480-408e-818e-165c10240c6f
+
+###

@@ -1,0 +1,36 @@
+<a class="btn btn-default" ui-sref="app.from-yandex-region">Выбрать из регионов яндекса</a>
+<a class="btn btn-success" ng-click="ctrl.openModal()">Добавить регион по точкам</a>
+<hr>
+
+<div yandex-map
+     style="height: 500px;"
+     init-params="ctrl.mapParams"
+     on-after-init="ctrl.onMapInit($target)"></div>
+
+<div ng-if="ctrl.polygonData != null">
+
+	<h3>Кол-во точек: {{ctrl.polygonData.polygon.length}}</h3>
+	<textarea rows="10" style="box-sizing: border-box; width: 100%;">{{ctrl.polygonData.polygon}}</textarea>
+
+	<h3>Длина строки: {{ctrl.polygonData.polygonSlava.length}} &mdash; Слава</h3>
+	<textarea rows="10" style="box-sizing: border-box; width: 100%;">{{ctrl.polygonData.polygonSlava}}</textarea>
+
+	<h3>Запрос для обновления</h3>
+
+	<div class="form-row">
+		<label for="delivery_zone_id">ID для обновления `delivery_zone`</label>
+		<input id="delivery_zone_id"
+		       class="form-control"
+		       ng-change="ctrl.doUpdateMysqlCommand()"
+		       ng-model="ctrl.deliveryZoneId"/>
+	</div>
+
+	<div style="margin-top: 1em;" ng-if="ctrl.deliveryZoneId != null && ctrl.deliveryZoneId != ''">
+	<pre>
+		{{ctrl.mysqlUpdateCommand}}
+	</pre>
+	</div>
+
+</div>
+
+<hr>

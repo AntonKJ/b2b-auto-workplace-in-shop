@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+<?php
+
+$configPath = __DIR__ . DIRECTORY_SEPARATOR . 'config';
+
+$dbConnectionFile = $configPath . DIRECTORY_SEPARATOR . 'db_connection.conf';
+if (file_exists($dbConnectionFile . '.local'))
+	$dbConnectionData = file_get_contents($dbConnectionFile . '.local');
+else
+	$dbConnectionData = file_get_contents($dbConnectionFile);
+
+$indexesData = file_get_contents($configPath . DIRECTORY_SEPARATOR . 'indexes.conf');
+$searchdData = file_get_contents($configPath . DIRECTORY_SEPARATOR . 'searchd.conf');
+
+echo $dbConnectionData, "\n", $indexesData, "\n", $searchdData;
+exit();

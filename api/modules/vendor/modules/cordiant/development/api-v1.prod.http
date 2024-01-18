@@ -1,0 +1,62 @@
+###
+# Список всех товаров
+
+GET http://vendor.myexample.ru/cordiant/goods.json
+Authorization: Bearer ea73cdeb-dc92-4707-a23a-952745211234
+
+###
+# Список точек
+
+GET http://vendor.myexample.ru/cordiant/shops.json
+Authorization: Bearer ea73cdeb-dc92-4707-a23a-952745211234
+
+###
+# Описание точки
+
+GET http://vendor.myexample.ru/cordiant/shops/657.json
+Authorization: Bearer ea73cdeb-dc92-4707-a23a-952745211234
+
+###
+# Товары на точке с наличием
+
+GET http://vendor.myexample.ru/cordiant/shops/657/goods.json
+Authorization: Bearer ea73cdeb-dc92-4707-a23a-952745211234
+
+###
+# Доступность товара на точке с прогнозом
+
+GET http://vendor.myexample.ru/cordiant/shops/657/goods/650856163.json
+Authorization: Bearer ea73cdeb-dc92-4707-a23a-952745211234
+
+###
+
+POST http://vendor.myexample.ru/cordiant/order.json
+Authorization: Bearer ea73cdeb-dc92-4707-a23a-952745211234
+
+###
+
+POST http://vendor.myexample.ru/cordiant/order.json
+Authorization: Bearer ea73cdeb-dc92-4707-a23a-952745211234
+Content-Type: application/json
+
+{
+  "shopId": 1,
+  "shipmentDate": "2018-07-25",
+  "shipmentMethod": "PICKUP",
+  "paymentMethod": "CASH",
+  "comment": "Комментарий к заказу",
+  "customer": {
+    "firstname": "Даша",
+    "lastname": "Иванова",
+    "phone": "71112223344",
+    "email": "dasha@dasha.ru"
+  },
+  "goods": [
+    {
+      "sku": "99782928",
+      "quantity": 1
+    }
+  ]
+}
+
+###

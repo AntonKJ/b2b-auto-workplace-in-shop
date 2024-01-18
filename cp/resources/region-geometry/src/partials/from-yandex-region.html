@@ -1,0 +1,18 @@
+<a class="btn btn-default" ui-sref="app.draw">Нарисовать свой регион</a>
+<hr>
+
+<div yandex-map
+     style="height: 300px;"
+     init-params="mapParams"
+     on-after-init="onMapInit($target)"
+></div>
+
+<div ng-if="selected != null">
+
+	<h3>{{selected.title}} [#{{selected.id}}]</h3>
+	<textarea rows="10" style="box-sizing: border-box; width: 100%;">{{selected.polygon}}</textarea>
+
+	<h3>{{selected.title}} [#{{selected.id}}] &mdash; Слава</h3>
+	<textarea rows="10" style="box-sizing: border-box; width: 100%;">{{selected.polygonSlava}}</textarea>
+
+</div>
