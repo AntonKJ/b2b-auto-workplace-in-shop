@@ -17,6 +17,14 @@ Myexample B2B auto
 
 Далее в папке `/b2b/` выполнить `./init`
 
+#### Миграции:
+
+```
+vagrant ssh
+cd /app
+./yii migrate
+```
+
 Далее в конфигурации `/b2b/console/config/main-local.php` добавить строку `‘indexPath’ => ‘/sphinxsearch’` 
  перед аргументом `tsvPipeCommand`
  
@@ -28,7 +36,6 @@ Myexample B2B auto
 
 
 Если после выполнения команды `vagrant up` есть ошибки связанные с `sphinxsearch`, выполнить следующие команды:
-
 ```
 vagrant ssh
 sudo mkdir /sphinxsearch
@@ -41,13 +48,9 @@ vagrant halt
 vagrant up
 ```
 
-#### Миграции:
+#### 1С
 
-```
-vagrant ssh
-cd /app
-./yii migrate
-```
+На тестовом сервере - `185.60.133.29`
 
 #### Запуск проекта
 ```
@@ -55,9 +58,6 @@ vagrant up - для запуска проекта
 vagrant halt - для остановки проекта
 ```
 
-#### Проброс 1С
-
-На тестовом сервере - `185.60.133.29`
 ```
 ssh -L 0.0.0.0:22000:109.73.36.118:80 operator@185.60.133.29 -p 65022
 ```
